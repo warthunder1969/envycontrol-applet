@@ -18,4 +18,5 @@ Keep in mind any custom X.org configuration may get deleted or overwritten when 
 
 
 Envycontrol: https://github.com/bayasdev/envycontrol
+
 Nvidia-prime applet: https://github.com/linuxmint/nvidia-prime-applet
