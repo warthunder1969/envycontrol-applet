@@ -1,0 +1,249 @@
+nvidia-prime-applet (1.4.3) xia; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 05 Dec 2024 10:50:04 +0000
+
+nvidia-prime-applet (1.4.2) wilma; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Sun, 21 Jul 2024 10:38:30 +0100
+
+nvidia-prime-applet (1.4.1) wilma; urgency=medium
+
+  [ Michael Webster ]
+  * Fix version check for minimum on-demand support.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Tue, 25 Jun 2024 20:56:41 +0100
+
+nvidia-prime-applet (1.4.0) wilma; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Tue, 18 Jun 2024 20:51:14 +0100
+
+nvidia-prime-applet (1.3.9) virginia; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 04 Jan 2024 16:46:40 +0000
+
+nvidia-prime-applet (1.3.8) virginia; urgency=medium
+
+  [ kacperpaczos ]
+  * Added file not found exception. (#19)
+
+  [ Clement Lefebvre ]
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Sun, 03 Dec 2023 15:09:19 +0000
+
+nvidia-prime-applet (1.3.7) victoria; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 07 Jul 2023 17:14:36 +0200
+
+nvidia-prime-applet (1.3.6) victoria; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 08 Jun 2023 11:50:18 +0100
+
+nvidia-prime-applet (1.3.5) vanessa; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 02 Dec 2022 17:31:26 +0000
+
+nvidia-prime-applet (1.3.4) vanessa; urgency=medium
+
+  [ Michael Webster ]
+  * Fix installed driver version check to accomodate the new dkms status format.
+
+  [ Clement Lefebvre ]
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Sun, 24 Jul 2022 12:25:09 +0200
+
+nvidia-prime-applet (1.3.3) vanessa; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Sun, 26 Jun 2022 16:03:39 +0200
+
+nvidia-prime-applet (1.3.2) vanessa; urgency=medium
+
+  [ hammy3502 ]
+  * Applet Menu Reflects a Queued Switch before Logging Out (#14)
+
+  [ Clement Lefebvre ]
+  * l10n: Update POT
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 10 Jun 2022 11:58:05 +0200
+
+nvidia-prime-applet (1.3.1) una; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 31 Dec 2021 12:54:10 +0000
+
+nvidia-prime-applet (1.3.0) una; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Mon, 06 Dec 2021 15:43:09 +0000
+
+nvidia-prime-applet (1.2.9) uma; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 25 Jun 2021 14:52:17 +0100
+
+nvidia-prime-applet (1.2.8) uma; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 10 Jun 2021 11:39:37 +0100
+
+nvidia-prime-applet (1.2.7) uma; urgency=medium
+
+  [ Michael Webster ]
+  * Add ui support for AMD integrated graphics.
+
+  [ Mahdi Abdelkhalek ]
+  * Permit arguments to have backslash escaped spaces
+  * Permit arguments to have backslash escaped spaces
+
+  [ Clement Lefebvre ]
+  * Detection: Switch from prime-supported to /var/lib/ubuntu-drivers-common/last_gfx_boot
+  * l10n: Update POT
+
+ -- Clement Lefebvre <root@linuxmint.com>  Tue, 25 May 2021 13:54:43 +0100
+
+nvidia-prime-applet (1.2.6) ulyssa; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Sat, 02 Jan 2021 17:02:45 +0000
+
+nvidia-prime-applet (1.2.5) ulyssa; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Thu, 10 Dec 2020 12:41:12 +0000
+
+nvidia-prime-applet (1.2.4) ulyana; urgency=medium
+
+  [ Michael Webster ]
+  * Add a couple of debugging statements for when startup aborts.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Mon, 30 Nov 2020 11:15:41 +0000
+
+nvidia-prime-applet (1.2.3) ulyana; urgency=medium
+
+  [ Michael Webster ]
+  * Add missing dependency in debian/control.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 21 Aug 2020 10:32:25 +0100
+
+nvidia-prime-applet (1.2.2) ulyana; urgency=medium
+
+  [ Michael Webster ]
+  * Don't allow switching to on-demand mode if the driver is too old.
+  * nvidia-prime: Just hide the on-demand menu item if it's not available.
+
+ -- Clement Lefebvre <root@linuxmint.com>  Tue, 11 Aug 2020 14:54:31 +0100
+
+nvidia-prime-applet (1.2.1) ulyana; urgency=medium
+
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Wed, 24 Jun 2020 11:54:24 +0100
+
+nvidia-prime-applet (1.2.0) ulyana; urgency=medium
+
+  * Fix on-demand icon
+  * Remove python build dependency
+  * Remove unused icons
+  * Remove obsolete applet
+  * Revert "Remove unused icons"
+  * Add about dialog
+  * Show GPU renderer in tooltip and menu
+  * Show menu on left-click
+  * Switch mode directly from the applet
+  * Make it more obvious what profile is active
+  * Add l10n infrastructure
+  * Add nvidia-optimus-offload-glx and nvidia-optimus-offload-vulkan
+  * l10n: Update translations
+
+ -- Clement Lefebvre <root@linuxmint.com>  Tue, 12 May 2020 11:20:15 +0100
+
+nvidia-prime-applet (1.0.9) ulyana; urgency=medium
+
+  * Remove trailing spaces
+  * Packaging: Fix python dependencies
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 03 Apr 2020 11:58:56 +0100
+
+nvidia-prime-applet (1.0.8) tricia; urgency=medium
+
+  * Move icons to hicolor
+  * Switch to XappStatusIcon
+  * Switch to python 3
+  * Switch to symbolic icons
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 22 Nov 2019 12:55:17 +0000
+
+nvidia-prime-applet (1.0.7) tara; urgency=medium
+
+  [ NikoKrause ]
+  * applet: use symbolic nvidia/intel icons (#3)
+
+ -- Clement Lefebvre <root@linuxmint.com>  Mon, 07 May 2018 13:40:14 +0100
+
+nvidia-prime-applet (1.0.6) serena; urgency=medium
+
+  [ brownsr ]
+  * Permit this applet in vertical panels
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 04 Nov 2016 11:45:48 +0000
+
+nvidia-prime-applet (1.0.5) sarah; urgency=medium
+
+  * Use indicators under KDE
+
+ -- Clement Lefebvre <root@linuxmint.com>  Tue, 16 Aug 2016 16:56:58 +0200
+
+nvidia-prime-applet (1.0.4) sarah; urgency=medium
+
+  * Fix GtkStatusIcon menu popup on newer Gtk
+
+ -- Clement Lefebvre <root@linuxmint.com>  Fri, 10 Jun 2016 15:02:30 +0100
+
+nvidia-prime-applet (1.0.3) rafaela; urgency=medium
+
+  * Removed unecessary imports
+
+ -- Clement Lefebvre <root@linuxmint.com>  Tue, 14 Jul 2015 13:58:32 +0200
+
+nvidia-prime-applet (1.0.2) rafaela; urgency=medium
+
+  * Don't write to stdout (it ends up in .xsession-errors.. non-NVIDIA users don't want to see PRIME errors/debug info)
+
+ -- Clement Lefebvre <root@linuxmint.com>  Tue, 23 Jun 2015 18:39:04 +0200
+
+nvidia-prime-applet (1.0.1) rafaela; urgency=medium
+
+  * Added a systray application for MATE/Xfce/KDE
+  * Made the xdg autostart visible and more explanatory
+
+ -- Clement Lefebvre <root@linuxmint.com>  Tue, 23 Jun 2015 17:29:36 +0200
+
+nvidia-prime-applet (1.0.0) rafaela; urgency=low
+
+  * Initial release
+
+ -- Clement Lefebvre <root@linuxmint.com>  Tue,  23 Jun 2015 16:28:00 +0000
+

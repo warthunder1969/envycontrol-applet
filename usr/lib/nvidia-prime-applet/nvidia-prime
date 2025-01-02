@@ -1,0 +1,255 @@
+#!/usr/bin/python3
+import gettext
+import gi
+import os
+import subprocess
+import sys
+import re
+from packaging.version import Version
+
+gi.require_version('Gtk', '3.0')
+gi.require_version('XApp', '1.0')
+from gi.repository import Gtk, XApp
+
+# i18n
+gettext.install("nvidia-prime-applet", "/usr/share/locale")
+
+NVIDIA_MODE = _("NVIDIA (Performance Mode)")
+ON_DEMAND_MODE = _("NVIDIA On-Demand")
+INTEL_MODE = _("Intel (Power Saving Mode)")
+AMD_MODE = _("AMD (Power Saving Mode)")
+
+MIN_ON_DEMAND_VERSION = "435.17"
+
+INTEL_PCI_ID = "8086"
+NVIDIA_PCI_ID = "10de"
+AMD_PCI_ID = "1002"
+
+def get_output(commands):
+    try:
+        process = subprocess.Popen(commands, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+        out, err = process.communicate()
+        return out.decode('utf-8').strip()
+    except FileNotFoundError:
+        print("Error: File or directory not found.")
+        return None
+
+class Tray:
+    def __init__(self, integrated_is_intel):
+
+        self.icon = XApp.StatusIcon()
+        self.icon.set_name("nvidia-prime")
+        self.integrated_is_intel = integrated_is_intel
+        self.switched_to = None
+        self.mode_at_start = None  # Holds the name to pass to prime-select
+        self.mode_name_at_start = None  # Holds the name to show to users
+        self.build_menu()
+
+    def build_menu(self):
+        hybrid_supported = self.should_show_hybrid()
+
+        # Find GPU name
+        renderer = None
+        try:
+            renderer = subprocess.check_output("glxinfo | grep -i 'OpenGL renderer'", shell=True).decode("UTF-8").strip().split(": ")[1]
+        except:
+            pass
+
+        if self.integrated_is_intel:
+            integrated_icon_name = "prime-tray-intel-symbolic"
+            self.integrated_mode = INTEL_MODE
+        else:
+            integrated_icon_name = "prime-tray-amd-symbolic"
+            self.integrated_mode = AMD_MODE
+
+        # Find active mode
+        nvidia = Gtk.MenuItem(label=_("Switch to: %s") % NVIDIA_MODE)
+        nvidia.connect("activate", self.switch, 'nvidia', NVIDIA_MODE)
+
+        if hybrid_supported:
+            ondemand = Gtk.MenuItem(label=_("Switch to: %s") % ON_DEMAND_MODE)
+            ondemand.connect("activate", self.switch, 'on-demand', ON_DEMAND_MODE)
+
+        integrated = Gtk.MenuItem(label=_("Switch to: %s") % self.integrated_mode)
+        integrated.connect("activate", self.switch, 'intel', self.integrated_mode)
+
+        if self.mode_at_start is None:
+            active_gpu = get_output(["prime-select", "query"])
+            self.mode_at_start = active_gpu
+        else:
+            active_gpu = self.mode_at_start
+        if (active_gpu == "nvidia"):
+            self.icon.set_icon_name("prime-tray-nvidia-symbolic")
+            mode = NVIDIA_MODE
+        elif (active_gpu == "on-demand"):
+            self.icon.set_icon_name(integrated_icon_name)
+            mode = ON_DEMAND_MODE
+        elif (active_gpu == "intel"):
+            self.icon.set_icon_name(integrated_icon_name)
+            mode = self.integrated_mode
+        else:
+            self.icon.set_icon_name("dialog-error-symbolic")
+            mode = _("Unknown mode")
+        if self.mode_name_at_start is None:
+            self.mode_name_at_start = mode
+
+        menu = Gtk.Menu()
+
+        if renderer is None:
+            self.icon.set_tooltip_text(mode)
+        else:
+            self.icon.set_tooltip_text("%s\n%s" % (renderer, mode))
+            item = Gtk.MenuItem(label=renderer)
+            item.set_sensitive(False)
+            menu.append(item)
+            menu.append(Gtk.SeparatorMenuItem())
+
+        item = Gtk.MenuItem(label=_("Active profile: %s") % mode)
+        item.set_sensitive(False)
+        menu.append(item)
+
+        if self.switched_to is None:
+            if mode != self.integrated_mode:
+                menu.append(integrated)
+            if mode != NVIDIA_MODE:
+                menu.append(nvidia)
+            if mode != ON_DEMAND_MODE and hybrid_supported:
+                menu.append(ondemand)
+        else:
+            confirm_item = Gtk.MenuItem(label=_("Log out to switch to: %s") % self.switched_to)
+            confirm_item.set_sensitive(False)
+            menu.append(confirm_item)
+            cancel_item = Gtk.MenuItem(label=_("Cancel switch"))
+            cancel_item.connect("activate", self.switch, self.mode_at_start, self.mode_name_at_start, True)
+            menu.append(cancel_item)
+
+
+        menu.append(Gtk.SeparatorMenuItem())
+
+        item = Gtk.MenuItem(label=_("NVIDIA Settings"))
+        item.connect("activate", self.run_nvidia_settings)
+        menu.append(item)
+        menu.append(Gtk.SeparatorMenuItem())
+
+        item = Gtk.MenuItem(label=_("About"))
+        item.connect("activate", self.about)
+        menu.append(item)
+
+        item = Gtk.MenuItem(label=_("Quit"))
+        item.connect("activate", self.terminate)
+        menu.append(item)
+        menu.show_all()
+
+        self.icon.set_primary_menu(menu)
+        self.icon.set_secondary_menu(menu)
+
+    def run_nvidia_settings (self, arg=None):
+        subprocess.Popen(["nvidia-settings", "-page", "PRIME Profiles"])
+
+    def should_show_hybrid(self):
+
+        try:
+            for line in get_output(["dkms", "status"]).splitlines():
+                if "nvidia" in line:
+                    # https://github.com/dell/dkms/commit/f83b758b6fb8ca67b1ab65df9e3d2a1e994eb483
+                    if line.startswith("nvidia,"):
+                        # Mint 20 (dkms 2.8.1):
+                        # nvidia, 515.48.07, 5.15.0-33-generic, x86_64: installed
+                        current_version = re.match(r"nvidia,[\W]*([\d.]+),.*", line).group(1)
+                    else:
+                        # Mint 21 (dkms 2.8.7):
+                        # nvidia/470.129.06, 5.15.0-37-generic, x86_64: installed
+                        current_version = re.match(r"nvidia/([\d.]+),.*", line).group(1) # Mint 21 (dkms 2.8.7)
+
+                    print("Required nvidia driver version for on-demand: %s" % MIN_ON_DEMAND_VERSION)
+                    print("Detected nvidia driver version: %s" % str(current_version))
+                    if Version(current_version) < Version(MIN_ON_DEMAND_VERSION):
+                        print("On-demand not available")
+                        return False
+                    break
+        except Exception as e:
+            print("Error determining on-demand support", str(e))
+
+        return True
+
+    def dialog_closed(self, widget, event):
+        return Gtk.ResponseType.NO
+
+    def switch(self, widget, mode, mode_description, is_cancel=False):
+        if is_cancel:
+            message = _("Are you sure you want to cancel the switch and return to %s?") % mode_description
+        else:
+            message = _("Are you sure you want to switch to %s?") % mode_description
+        dialog = Gtk.MessageDialog(parent=None, message_type=Gtk.MessageType.INFO, buttons=Gtk.ButtonsType.YES_NO, text=message)
+        if not is_cancel:
+            dialog.format_secondary_text(_('Changes will take effect after you log out and log back in.'))
+        dialog.set_deletable(False)
+        dialog.set_title("NVIDIA Optimus")
+        dialog.set_icon_name("prime-tray-nvidia")
+        dialog.set_skip_taskbar_hint(False)
+        dialog.set_skip_pager_hint(False)
+        dialog.connect("delete_event", self.dialog_closed)
+        response = dialog.run()
+        dialog.destroy()
+        if response == Gtk.ResponseType.YES:
+            self.switched_to = mode_description
+            ex_code = subprocess.call(["pkexec", "prime-select", mode])
+            if ex_code == 0: # Don't change anything if we cancel
+                if is_cancel:
+                    self.switched_to = None
+                    self.mode_at_start = None
+                    self.mode_name_at_start = None # Reset these since we're back to "square one" in terms of canceling
+                self.build_menu()
+
+    def about(self, widget):
+        about = Gtk.AboutDialog()
+        about.set_program_name("NVIDIA Optimus")
+        about.set_website("https://github.com/linuxmint/nvidia-prime-applet")
+        about.set_website_label("https://github.com/linuxmint/nvidia-prime-applet")
+        about.set_license_type(Gtk.License.GPL_3_0)
+        about.set_logo_icon_name('prime-tray-nvidia')
+
+        about.run()
+        about.destroy()
+
+    def terminate(self, window = None, data = None):
+        Gtk.main_quit()
+
+if __name__ == "__main__":
+
+    # If nvidia-prime isn't installed or isn't supported, exit cleanly
+    if not (os.path.exists("/usr/bin/nvidia-settings") and os.path.exists("/usr/bin/prime-select")):
+        print("Aborting: Check that the nvidia-settings and nvidia-prime packages are installed.")
+        sys.exit(0)
+
+    has_intel = False
+    has_nvidia = False
+    has_amd = False
+    path = '/var/lib/ubuntu-drivers-common/last_gfx_boot'
+    if os.path.isfile(path):
+        with open(path, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("%s:" % INTEL_PCI_ID):
+                    has_intel = True
+                    print("Detected Intel GPU:", line)
+                elif line.startswith("%s:" % NVIDIA_PCI_ID):
+                    has_nvidia = True
+                    print("Detected NVIDIA GPU:", line)
+                elif line.startswith("%s:" % AMD_PCI_ID):
+                    has_amd = True
+                    print("Detected AMD GPU:", line)
+    else:
+        print("%s not found!" % path)
+        sys.exit(0)
+
+    if not has_nvidia:
+        print("No NVIDIA card detected!")
+        sys.exit(0)
+
+    if has_intel or has_amd:
+        Tray(integrated_is_intel=has_intel)
+        Gtk.main()
+    else:
+        print("No Intel/AMD card detected!")
+        sys.exit(0)
